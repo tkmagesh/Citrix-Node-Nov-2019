@@ -14,20 +14,44 @@
         }
         function onBtnDoWorkClick(){
             displayMessage('Work Started');
-            doWork();
-            displayMessage('Work Completed');
+            doWork(onWorkCompletion, onWorkProgress);
+        }
+        function onWorkCompletion(){
+            displayMessage('Work Completed'); 
+        }
+        function onWorkProgress(percentCompleted){
+            document.getElementById('workProgress').value = percentCompleted;
         }
         function displayMessage(msg){
             var divMessages = document.getElementById('divMessages');
             divMessages.innerHTML += msg + '<br/>';
         }
-        function doWork(){
-            for (let i = 0; i < 20000; i++) {
-                for (let j = 0; j < 10000; j++) {
-                    for (let k = 0; k < 100; k++) {
+        function doWork(workCompleteCallback, workProgressCallback){
+            var totalIterations = 1000,
+                currentIteration = 0;
+
+            function oneIteration(){
+                for (let i = 0; i < (20000/totalIterations); i++) {
+                    for (let j = 0; j < 10000; j++) {
+                        for (let k = 0; k < 100; k++) {
+                        }
                     }
                 }
+                ++currentIteration;
+                if (currentIteration % 10 === 0 && typeof workProgressCallback === 'function'){
+                    var percentCompleted = (currentIteration/totalIterations) * 100;
+                    workProgressCallback(percentCompleted);
+                }
+                if (currentIteration < totalIterations){
+                    setTimeout(oneIteration);
+                } else {
+                    console.log('JOB DONE!!');
+                    if (typeof workCompleteCallback === 'function')
+                        workCompleteCallback();
+                }
             }
+
+            setTimeout(oneIteration);
         }
     })();
     </script>
@@ -35,6 +59,9 @@
 <body>
     <input type="text" name="" id="">
     <input type="button" value="Do Work" id="btnDoWork">
+    <div>
+        <progress id="workProgress" min="0" max="100" value="0"></progress>
+    </div>
     <div id="divMessages"></div>
 </body>
 </html>
