@@ -2,23 +2,16 @@ var http = require('http'),
     dataParser = require('./dataParser'),
     serveStatic = require('./serveStatic'),
     serveCalculator = require('./serveCalculator'),
-    serve404 = require('./serve404');
+    serve404 = require('./serve404'),
+    app = require('./app');
 
-var _middlewares = [ dataParser, serveStatic, serveCalculator, serve404 ];
 
-function  exec(req, res, fns) {
-    var first = fns[0],
-        remaining = fns.slice(1),
-        next = function(){
-            exec(req, res, remaining);
-        };
-    if (typeof first === 'function')
-        first(req, res, next);
-}
+app.use(dataParser); 
+app.use(serveStatic); 
+app.use(serveCalculator); 
+app.use(serve404);
 
-var server = http.createServer(function(req, res){
-    exec(req, res, _middlewares);
-});
+var server = http.createServer(app);
 
 server.listen(8080);
 
