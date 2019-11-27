@@ -1,18 +1,17 @@
 const express = require('express'),
-    router = express.Router();
+    router = express.Router(),
+    bugService = require('../services/bugService');
 
-const bugsList = [
-    { id : 1, name : 'User access denied', isClosed : false },
-    { id: 2, name: 'Application not responding', isClosed: true }
-];
+
 
 router.get('/', (req, res, next) => {
-    res.json(bugsList);
+    const bugs = bugService.getAll();
+    res.json(bugs);
 });
 
 router.get('/:id', (req, res, next) => {
     const id = parseInt(req.params.id);
-    const resultBug = bugsList.find(bug => bug.id === id);
+    const resultBug = bugService.get(id);
     if (resultBug){
         res.json(resultBug);
     } else {
@@ -21,13 +20,33 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-    const bugData = req.body,
-        newBugId = bugsList.reduce((result, bug) => result > bug.id ? result : bug.id, 0) + 1,
-        newBug = { ...bugData, id : newBugId };
-
-    bugsList.push(newBug);
+    const bugData = req.body;
+    const newBug = bugService.addNew(bugData);
     res.status(201).json(newBug);
-})
+});
+
+router.put('/:id', (req, res, next) => {
+    const bugData = req.body,
+        bugId = parseInt(req.params.id);
+    const updatedBug = bugService.update(bugId, bugData);
+    res.json(updatedBug);
+});
+
+router.patch('/:id', (req, res, next) => {
+    const bugData = req.body,
+        bugId = parseInt(req.params.id);
+
+    const resultBug = bugService.partialUpdate(bugId, bugData);
+    res.json(resultBug);
+});
+
+router.delete('/:id', (req, res, next) => {
+    const bugId = parseInt(req.params.id);
+    bugService.remove(bugId);
+    res.json({});
+});
+
+
 
 
 module.exports = router;
