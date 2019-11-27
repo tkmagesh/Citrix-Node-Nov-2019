@@ -41,6 +41,7 @@ function saveData(data) {
     });
 }
 */
+/*
 const util = require('util');
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -55,4 +56,17 @@ function saveData(data) {
     return writeFileAsync(dbFile, JSON.stringify(data));
 }
 
+*/
+
+const bluebird = require('bluebird');
+bluebird.promisifyAll(fs);
+
+async function getData() {
+    const fileContents = await fs.readFileAsync(dbFile, { encoding: 'utf8' });
+    return JSON.parse(fileContents);
+}
+
+function saveData(data) {
+    return fs.writeFileAsync(dbFile, JSON.stringify(data));
+}
 module.exports = { getData, saveData };
