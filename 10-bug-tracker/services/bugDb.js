@@ -19,6 +19,7 @@ function saveData(data, callback){
     fs.writeFile(dbFile, rawData, callback);
 } */
 
+/*
 function getData() {
     return new Promise((resolve, reject) => {
         fs.readFile(dbFile, { encoding: 'utf8' }, (err, fileContents) => {
@@ -38,6 +39,20 @@ function saveData(data) {
             resolve();
         });
     });
+}
+*/
+const util = require('util');
+const readFileAsync = util.promisify(fs.readFile);
+
+async function getData() {
+    const fileContents = await readFileAsync(dbFile, { encoding : 'utf8'});
+    return JSON.parse(fileContents);
+}
+
+const writeFileAsync = util.promisify(fs.writeFile);
+
+function saveData(data) {
+    return writeFileAsync(dbFile, JSON.stringify(data));
 }
 
 module.exports = { getData, saveData };
