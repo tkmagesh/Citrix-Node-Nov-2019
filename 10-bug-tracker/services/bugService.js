@@ -2,41 +2,49 @@ const bugDb = require('./bugDb');
 
 
 
+/* 
+function getAll(callback){
+    bugDb.getData(callback);
+}
+ */
+
 function getAll(){
-    let bugsList = bugDb.getData();
-    return [...bugsList];
+    return bugDb.getData();
 }
 
-function get(id){
-    let bugsList = bugDb.getData();
+async function get(id){
+    let bugsList = await bugDb.getData();
     return bugsList.find(bug => bug.id === id);
 }
 
-function addNew(bugData){
-    let bugsList = bugDb.getData();
+async function addNew(bugData){
+    let bugsList = await bugDb.getData();
     const newBugId = bugsList.reduce((result, bug) => result > bug.id ? result : bug.id, 0) + 1;
     const newBug = { ...bugData, id: newBugId };
     bugsList.push(newBug);
-    bugDb.saveData(bugsList);
+    await bugDb.saveData(bugsList);
     return newBug;
 }
 
-function update(id, bugData){
-    let bugsList = bugDb.getData();
+async function update(id, bugData){
+    let bugsList = await bugDb.getData();
     bugsList = bugsList.map(bug => bug.id === id ? bugData : bug);
+    await bugDb.saveData(bugsList);
     return bugData;
 }
 
-function partialUpdate(bugId, bugData){
-    let bugsList = bugDb.getData();
+async function partialUpdate(bugId, bugData){
+    let bugsList = await bugDb.getData();
     bugsList = bugsList.map(bug => bug.id === bugId ? { ...bug, ...bugData } : bug);
+    await bugDb.saveData(bugsList);
     const resultBug = bugsList.find(bug => bug.id === bugId);
     return resultBug;
 }
 
-function remove(bugId) {
-    let bugsList = bugDb.getData();
+async function remove(bugId) {
+    let bugsList = await bugDb.getData();
     bugsList = bugsList.filter(bug => bug.id !== bugId);
+    await bugDb.saveData(bugsList);
 }
 
 module.exports =  { getAll, get, addNew, update, partialUpdate, remove };
