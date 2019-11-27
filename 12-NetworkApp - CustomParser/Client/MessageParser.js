@@ -2,14 +2,16 @@ var EventEmitter = require("events").EventEmitter;
 
 class MessageParser extends EventEmitter{
     constructor(socket){
+        super();
+        let buffer = '';
         socket.setEncoding("utf8");
-        var buffer = '';
+        
         socket.on("data",  (chunk) => {
             buffer = buffer + chunk;
             while (buffer.indexOf("\n") !== -1) {
-                var msg = buffer.substr(0, buffer.indexOf("\n"));
+                let msg = buffer.substr(0, buffer.indexOf("\n"));
                 buffer = buffer.substr(buffer.indexOf("\n") + 1);
-                var response = JSON.parse(msg);
+                let response = JSON.parse(msg);
                 this.emit(response.type, response.filename);
             }
         });

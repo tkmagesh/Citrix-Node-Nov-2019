@@ -16,7 +16,9 @@ if (cluster.isMaster) {
 } else {
   // Workers can share any TCP connection
   // In this case it is an HTTP server
+  console.log(`${process.pid} instantiated`);
   http.createServer(function(req, res) {
+    console.log(`${process.pid} serving the request` );
     res.writeHead(200);
     res.end("hello world\n");
   }).listen(8000);
